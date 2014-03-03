@@ -69,7 +69,7 @@ public class MainActivity extends Activity
 	purchasepriceeditText = (EditText) findViewById (R.id.purchasepriceeditText);
 	downpaymenteditText = (EditText) findViewById (R.id.downpaymenteditText);
 	interestrateeditText = (EditText) findViewById (R.id.interestrateeditText);
-	
+
 	// get the TextWatcher's
 	purchasepriceeditText.addTextChangedListener(purchasepriceeditTextWatcher);
 	downpaymenteditText.addTextChangedListener(downpaymenteditTextWatcher);
@@ -106,7 +106,7 @@ public class MainActivity extends Activity
 	private void updateCustom()
 	{
 		// set customyearstextView to match seekBar
-		customyearstextView.setText(currentCustomPercent);
+		customyearstextView.setText(Integer.toString(currentCustomPercent));
 		
 		// calculate custom years mortgage amount
 		double customYearMonthly = currentCustomPercent - 5; //FIX THIS
