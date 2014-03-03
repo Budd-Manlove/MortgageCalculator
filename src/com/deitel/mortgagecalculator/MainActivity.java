@@ -18,8 +18,8 @@ public class MainActivity extends Activity
 	
 	private double currentPurchasePrice; //purchase price entered by user
 	private double currentDownPayment; //down payment entered by user
-	private double currentInterestRate; //interest rate entered by user
-	private int currentCustomPercent; //years amount set by seekbar
+	private float currentInterestRate; //interest rate entered by user
+	private double currentCustomPercent; //years amount set by seekbar
 	
 	private EditText monthlypayment10editText; // displays 10 years mortgage amount
 	private EditText monthlypayment20editText; // displays 20 years mortgage amount
@@ -40,9 +40,9 @@ public class MainActivity extends Activity
 		// check if app just started or is being restored from memory
 	      if ( savedInstanceState == null ) // the app just started running
 	      {
-	        // currentPurchasePrice = 0.0;
-	         //currentDownPayment = 0.0;
-	        // currentInterestRate = 0.0;
+	         currentPurchasePrice = 0.0;
+	         currentDownPayment = 0.0;
+	         currentInterestRate = 0.0f;
 	         currentCustomPercent = 15; 
 	      } // end if
 	      else // app is being restored from memory, not executed from scratch
@@ -50,7 +50,7 @@ public class MainActivity extends Activity
 	         // initialize to saved amount
 	         currentPurchasePrice = savedInstanceState.getDouble(PURCHASE_PRICE); 
 	         currentDownPayment = savedInstanceState.getDouble(DOWN_PAYMENT);
-	         currentInterestRate = savedInstanceState.getDouble(INTEREST_RATE);
+	         currentInterestRate = savedInstanceState.getFloat(INTEREST_RATE);
 	         currentCustomPercent = savedInstanceState.getInt(CUSTOM_PERCENT); 
 	      } // end else
 
@@ -83,20 +83,29 @@ public class MainActivity extends Activity
 	
 	private void updateStandard()
 	{
+		float interest = currentInterestRate * .01f / 12;
+		float interest1 = interest + 1;
+		
 		// calculate 10 year mortgage
-		double tenYearMonthly = currentPurchasePrice - 1; //NO FORMULA YET
+		double tenYearMonthly = (currentPurchasePrice - currentDownPayment) 
+				* (interest * (Math.pow(interest1,120)) 
+						/ (Math.pow(interest1, 120)- 1));
 		
 		// set monthlypayment10editText to tenYearMonthly
-		monthlypayment10editText.setText(String.format("$.02f", tenYearMonthly));
+		monthlypayment10editText.setText(String.format("%.02f", tenYearMonthly));
 		
 		// calculate 20 year mortgage
-		double twentyYearMonthly = currentPurchasePrice - 2; //NO FORMULA YET
+		double twentyYearMonthly = (currentPurchasePrice - currentDownPayment) 
+				* (interest * (Math.pow(interest1,240)) 
+						/ (Math.pow(interest1, 240)- 1));
 		
 		// set monthlypayment10editText to tenYearMonthly
-		monthlypayment20editText.setText(String.format("$.02f", twentyYearMonthly));
+		monthlypayment20editText.setText(String.format("%.02f", twentyYearMonthly));
 		
 		// calculate 30 year mortgage
-		double thirtyYearMonthly = currentPurchasePrice - 3; //NO FORMULA YET
+		double thirtyYearMonthly = (currentPurchasePrice - currentDownPayment) 
+				* (interest * (Math.pow(interest1,360)) 
+						/ (Math.pow(interest1, 360)- 1));
 		
 		// set monthlypayment10editText to tenYearMonthly
 		monthlypayment30editText.setText(String.format("%.02f", thirtyYearMonthly));
@@ -105,14 +114,19 @@ public class MainActivity extends Activity
 	// updates the custom amount 
 	private void updateCustom()
 	{
+		float interest = currentInterestRate * .01f / 12;
+		float interest1 = interest + 1;
+		
 		// set customyearstextView to match seekBar
-		customyearstextView.setText(currentCustomPercent);
+		customyearstextView.setText(CUSTOM_PERCENT);
 		
 		// calculate custom years mortgage amount
-		double customYearMonthly = currentCustomPercent - 5; //FIX THIS
+		double customYearMonthly = (currentPurchasePrice - currentDownPayment) 
+				* (interest * (Math.pow(interest1,120)) 
+						/ (Math.pow(interest1, 120)- 1));
 		
 		// set monthlypayment10editText to tenYearMonthly
-		custompaymenteditText.setText(String.format("$.02f", customYearMonthly));
+		custompaymenteditText.setText(String.format("%.02f", customYearMonthly));
 	}
 	
 	// save values of edit texts and seek bar
@@ -228,11 +242,11 @@ public class MainActivity extends Activity
 			// convert purchasepriceeditTextWatcher text to double
 			try
 			{
-				currentInterestRate = Double.parseDouble(s.toString());
+				currentInterestRate = Float.parseFloat(s.toString());
 			}
 			catch (NumberFormatException e)
 			{
-				currentInterestRate = 0.0;
+				currentInterestRate = 0.0f;
 			}
 			updateStandard();
 			updateCustom();
